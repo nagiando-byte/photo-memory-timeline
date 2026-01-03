@@ -1,0 +1,116 @@
+@startuml Photo Memory Timeline Architecture
+
+!define RECTANGLE class
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #FFFFFF
+skinparam component {
+    BackgroundColor<<mobile>> #E3F2FD
+    BackgroundColor<<backend>> #FFF3E0
+    BackgroundColor<<database>> #F3E5F5
+    BackgroundColor<<external>> #E8F5E9
+    BackgroundColor<<storage>> #FFF9C4
+    BorderColor #424242
+    FontSize 12
+}
+
+title Photo Memory Timeline - システムアーキテクチャ図
+
+package "モバイルアプリ層" <<mobile>> {
+    [React Native App] as mobile
+    [Expo MediaLibrary] as medialib
+    [Vision Framework] as vision
+    [React Navigation] as nav
+    [State Management] as state
+}
+
+package "バックエンド層" <<backend>> {
+    [API Gateway] as gateway
+    [Express API Server] as api
+    [Auth Service] as auth
+    [Photo Service] as photoSvc
+    [AI Analysis Service] as aiSvc
+    [Event Service] as eventSvc
+}
+
+package "データ層" <<database>> {
+    database "MySQL/TiDB" as db {
+        [users]
+        [photos]
+        [events]
+        [persons]
+        [faces]
+        [locations]
+    }
+}
+
+package "ストレージ層" <<storage>> {
+    [S3/R2 Object Storage] as storage
+}
+
+package "外部サービス" <<external>> {
+    [OpenAI Vision API] as openai
+    [OpenAI GPT-4 API] as gpt4
+    [Manus OAuth] as oauth
+    [Apple CLGeocoder] as geocoder
+}
+
+' モバイルアプリ内部の関係
+mobile --> medialib : 写真アクセス
+mobile --> vision : 顔検出
+mobile --> nav : 画面遷移
+mobile --> state : 状態管理
+
+' モバイルとバックエンドの通信
+mobile --> gateway : HTTPS
+
+' バックエンド内部の関係
+gateway --> api
+api --> auth
+api --> photoSvc
+api --> aiSvc
+api --> eventSvc
+
+' バックエンドとデータベース
+auth --> db
+photoSvc --> db
+aiSvc --> db
+eventSvc --> db
+
+' バックエンドとストレージ
+photoSvc --> storage : 画像保存
+aiSvc --> storage : サムネイル保存
+
+' バックエンドと外部サービス
+auth --> oauth : ユーザー認証
+aiSvc --> openai : 画像内容分析
+aiSvc --> gpt4 : イベントタイトル生成
+mobile --> geocoder : 逆ジオコーディング
+
+note right of mobile
+  **技術スタック**
+  - React Native
+  - Expo SDK 52+
+  - TypeScript
+  - TailwindCSS (NativeWind)
+end note
+
+note right of api
+  **技術スタック**
+  - Node.js + Express
+  - Drizzle ORM
+  - JWT認証
+  - TypeScript
+end note
+
+note right of db
+  **主要テーブル**
+  - users: ユーザー情報
+  - photos: 写真情報
+  - events: イベント情報
+  - persons: 人物情報
+  - faces: 顔検出結果
+  - locations: 場所情報
+end note
+
+@enduml

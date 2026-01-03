@@ -1,0 +1,91 @@
+erDiagram
+    users ||--o{ photos : "owns"
+    users ||--o{ events : "owns"
+    users ||--o{ persons : "manages"
+    events ||--o{ photos : "contains"
+    events ||--o| locations : "has"
+    events ||--o{ event_shares : "shared_via"
+    photos ||--o{ faces : "contains"
+    persons ||--o{ faces : "identified_as"
+    persons ||--o| faces : "represented_by"
+    
+    users {
+        uuid id PK
+        varchar email UK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    photos {
+        uuid id PK
+        uuid user_id FK
+        uuid event_id FK
+        varchar file_path
+        varchar thumbnail_path
+        timestamp taken_at
+        decimal latitude
+        decimal longitude
+        int width
+        int height
+        bigint file_size
+        boolean analyzed
+        timestamp created_at
+    }
+    
+    events {
+        uuid id PK
+        uuid user_id FK
+        varchar title
+        text description
+        timestamp start_time
+        timestamp end_time
+        uuid location_id FK
+        varchar event_type
+        uuid cover_photo_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    persons {
+        uuid id PK
+        uuid user_id FK
+        varchar name
+        uuid representative_face_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    faces {
+        uuid id PK
+        uuid photo_id FK
+        uuid person_id FK
+        float face_rect_x
+        float face_rect_y
+        float face_rect_width
+        float face_rect_height
+        blob face_encoding
+        timestamp created_at
+    }
+    
+    locations {
+        uuid id PK
+        decimal latitude
+        decimal longitude
+        varchar address
+        varchar city
+        varchar country
+        varchar place_name
+        timestamp created_at
+    }
+    
+    event_shares {
+        uuid id PK
+        uuid event_id FK
+        uuid shared_by_user_id FK
+        varchar share_token UK
+        enum permission
+        timestamp expires_at
+        varchar password_hash
+        timestamp created_at
+    }

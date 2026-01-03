@@ -1,0 +1,123 @@
+@startuml AI Analysis Workflow
+
+skinparam backgroundColor #FFFFFF
+skinparam activity {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+    FontSize 12
+    StartColor #4CAF50
+    EndColor #F44336
+    DiamondBackgroundColor #FFF9C4
+}
+
+title Photo Memory Timeline - AI分析ワークフロー
+
+start
+
+:ユーザーが写真同期を実行;
+
+:Expo MediaLibraryから\n写真一覧を取得;
+
+partition "メタデータ抽出" {
+    :各写真のEXIF情報を抽出;
+    note right
+        - 撮影日時
+        - GPS座標
+        - カメラ情報
+        - 解像度
+    end note
+}
+
+:写真とメタデータを\nサーバーにアップロード;
+
+:データベースに\n写真情報を保存;
+
+:サムネイル画像を生成;
+
+:AI分析キューに追加;
+
+partition "AI分析処理" {
+    :未分析の写真を\nキューから取得;
+    
+    fork
+        :Vision Frameworkで\n顔検出を実行;
+        :顔領域と特徴ベクトルを抽出;
+        :顔特徴をAES-256で暗号化;
+        :facesテーブルに保存;
+    fork again
+        :OpenAI Vision APIで\n画像内容分析を実行;
+        note right
+            - シーン分類
+            - 物体検出
+            - 雰囲気分析
+        end note
+        :分析結果を\nphotosテーブルに保存;
+    end fork
+    
+    :写真のanalyzedフラグを\ntrueに更新;
+}
+
+partition "イベント自動生成" {
+    :全写真を撮影日時で\nソート;
+    
+    :時間的に近い写真を\nグルーピング;
+    note right
+        - 2時間以内の写真を同一イベント候補
+        - GPS情報が大きく変わった場合は分割
+    end note
+    
+    repeat
+        :イベント候補を処理;
+        
+        :開始・終了日時を決定;
+        
+        :代表写真を選定;
+        
+        if (GPS情報あり?) then (yes)
+            :逆ジオコーディングで\n場所名を取得;
+            :locationsテーブルに保存;
+        else (no)
+            :場所情報なし;
+        endif
+        
+        :イベント内の全顔から\n参加人物を特定;
+        
+        :OpenAI GPT-4で\nイベントタイトルを生成;
+        note right
+            プロンプト例:
+            「以下の情報から自然な日本語の
+            イベントタイトルを生成してください。
+            日時: 2024年3月15日 14:00-17:00
+            場所: 東京都渋谷区、〇〇レストラン
+            人物: 太郎、花子
+            内容: 食事」
+            
+            出力例:
+            「渋谷で太郎・花子とランチ」
+        end note
+        
+        :eventsテーブルに保存;
+        
+    repeat while (次のイベント候補あり?) is (yes)
+    ->no;
+}
+
+partition "人物クラスタリング" {
+    :全顔特徴ベクトルを取得;
+    
+    :類似度計算で\n顔をグルーピング;
+    note right
+        - コサイン類似度を使用
+        - 閾値以上の類似度で同一人物と判定
+    end note
+    
+    :各グループをpersonsテーブルに保存;
+    
+    :facesテーブルのperson_idを更新;
+}
+
+:分析完了通知を\nユーザーに送信;
+
+stop
+
+@enduml
