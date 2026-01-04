@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "Photo Memory Timeline",
+    "slug": "photo-memory-timeline",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "photo-memory",
+    "owner": "photo-memory-timeline",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2196F3"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.photomemory.timeline",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "このアプリは写真を分析して思い出を整理するために、写真ライブラリへのアクセスが必要です。",
+        "NSPhotoLibraryAddUsageDescription": "このアプリは編集した写真を保存するために、写真ライブラリへの書き込みが必要です。",
+        "NSLocationWhenInUseUsageDescription": "このアプリは写真の撮影場所を特定するために、位置情報へのアクセスが必要です。",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2196F3"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.photomemory.timeline"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-router",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "このアプリは写真を分析して思い出を整理するために、写真ライブラリへのアクセスが必要です。",
+          "savePhotosPermission": "このアプリは編集した写真を保存するために、写真ライブラリへの書き込みが必要です。",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "このアプリは写真の撮影場所を特定するために、位置情報へのアクセスが必要です。"
+        }
+      ]
+    ]
+  }
+}
