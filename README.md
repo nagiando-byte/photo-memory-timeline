@@ -256,6 +256,43 @@ TBD
 
 ---
 
+## 🚀 デプロイメント
+
+### ワンクリックデプロイ（バックエンド）
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/nagiando-byte/photo-memory-timeline)
+
+**手順**:
+1. 上のボタンをクリック
+2. Render.comにログイン（GitHubアカウントで可能）
+3. 環境変数を設定:
+   - `DATABASE_URL`: TiDB Cloud/PlanetScaleの接続文字列
+   - `OPENAI_API_KEY`: OpenAI APIキー
+4. デプロイ完了後、URLをコピー
+
+### App Store デプロイ（モバイルアプリ）
+
+**必要なもの**:
+- Apple Developer Program（年間$99）
+- Expo アカウント（無料）
+
+**方法1: 自動スクリプト**
+```bash
+./deploy.sh
+```
+
+**方法2: 手動**
+詳細は [APP_STORE_GUIDE.md](./APP_STORE_GUIDE.md) を参照。
+
+```bash
+cd mobile
+eas login
+eas build --platform ios --profile production
+eas submit --platform ios
+```
+
+---
+
 ## 🎯 次のステップ
 
 1. `detailed_specification.md`を熟読する
